@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+ul{
+  list-style: none;
+}
+a{
+  text-decoration: none;
+}
+
+.menu-box{
+  width: 300px;
+  height: 100%;
+  position: fixed;
+  background: rgba(50,50,58,1);
+}
+
+.menu-item a{
+  display: block;
+  height: 40px;
+  line-height: 40px;
+  text-indent: 40px;
+  color: #fff;
+}
+.menu-item:hover{
+  background: rgba(31,181,172,1);
+}
+
+.content{
+  float: left;
+  margin-left: 350px;
+}
+
+.table{
+  border-collapse: collapse;
+}
+.table td, .table th{
+  color: rgba(118,118,118,1);
+  text-align: center;
+  height: 40px;
+  padding: 10px;
+  border: 1px solid #eaeaea;
+}
