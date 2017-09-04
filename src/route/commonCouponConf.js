@@ -110,6 +110,7 @@ export default class CommonCouponConf extends Component {
             obj.startTime = common.formatTime(list[i].startTime);
             obj.endTime = common.formatTime(list[i].endTime);
             obj.scene = rules.scene[list[i].scene];
+            obj.prid = list[i].prid;
             columns.push(obj);
         }
         return columns;

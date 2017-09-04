@@ -1,6 +1,7 @@
 module.exports = {
-    formatTime: function (timestamp) {
+    formatTime: function (timestamp, separator) {
         var newStamp;
+        var sep = separator || '/';
         if(timestamp.length < 13){
             newStamp = parseInt(timestamp * 1000);
         }else{
@@ -13,6 +14,6 @@ module.exports = {
         var h = time.getHours();
         var mm = time.getMinutes();
 
-        return y + '/' + m + '/' + d + ' ' + h + ':' + mm;
+        return y + sep + m + sep + d + ' ' + h + ':' + mm;
     }
 }

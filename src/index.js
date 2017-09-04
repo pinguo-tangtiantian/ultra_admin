@@ -5,7 +5,7 @@ import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
 import App from './app.js';
-import Menu from './components/menu/menu-list.js';
+import Menu from './components/common/menu/menu-list.js';
 import Home from './route/home.js';
 import CommonCouponConf from './route/commonCouponConf.js';
 import ModifyCoupon from './route/modifyCoupon.js';

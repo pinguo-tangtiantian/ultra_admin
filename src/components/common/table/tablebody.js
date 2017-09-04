@@ -25,7 +25,7 @@ export default class Tbody extends Component {
                                     }else{
                                         return (
                                             <td>
-                                                <Link to={{path: '/modifyCoupon', data: {row}}} >{th.actions[0].name}</Link>
+                                                <Link to={'/modifyCoupon?prid='+row.prid} >{th.actions[0].name}</Link>
                                             </td>
                                         )
                                     }
