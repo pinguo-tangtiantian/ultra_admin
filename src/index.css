@@ -43,3 +43,8 @@ a{
   padding: 10px;
   border: 1px solid #eaeaea;
 }
+
+
+.inline-block{
+  display: inline-block;
+}
