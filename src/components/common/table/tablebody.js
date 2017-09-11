@@ -5,7 +5,6 @@ import { Router, Route, Link } from 'react-router';
 export default class Tbody extends Component {
     constructor(props) {
         super(props);
-        console.log(props)
     }
 
     componentDidMount() {

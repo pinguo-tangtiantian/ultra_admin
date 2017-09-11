@@ -2,14 +2,29 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types'
 import $ from 'jquery';
-import common from '../js/common.js';
 
 import Table from '../components/common/table/table.js';
+var Common = require('../js/common.js');
 
 
 //table配置
 
 export default class CommonCouponConf extends Component {
+    //切换页码
+    hangleChangePage = (event) => {
+        let type = event.target.getAttribute('data-type');
+        let page = this.state.options.page;
+        if(type == 'prev' && page > 1){ //前一页
+            page --;
+        }else if(type == 'next'){
+            page ++;
+        }
+        this.setState((prevState) => {
+            Object.assign(prevState.options, { page: page});
+        });
+        this.getCouponList(page);
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -35,6 +50,8 @@ export default class CommonCouponConf extends Component {
                         ]
                     }
                 ],
+                page: 1,
+                pageAll: 0,
                 actions: [
                     {
                         title: "修改",
@@ -81,7 +98,7 @@ export default class CommonCouponConf extends Component {
 
     componentDidMount() {
         let _this = this;
-        _this.getCouponList();
+        _this.getCouponList(_this.state.options.page);
     }
 
     //处理数据
@@ -107,8 +124,8 @@ export default class CommonCouponConf extends Component {
             obj.amount = list[i].amount;
             obj.status = rules.status[list[i].status];
             obj.stint = list[i].stint == "0" ? "无限制" : "满" + list[i].stint + "元可用";
-            obj.startTime = common.formatTime(list[i].startTime);
-            obj.endTime = common.formatTime(list[i].endTime);
+            obj.startTime = Common.formatTime(list[i].startTime);
+            obj.endTime = Common.formatTime(list[i].endTime);
             obj.scene = rules.scene[list[i].scene];
             obj.prid = list[i].prid;
             columns.push(obj);
@@ -116,40 +133,43 @@ export default class CommonCouponConf extends Component {
         return columns;
     }
 
-    getCouponList() {
+    getCouponList(page) {
         let _this = this;
-        // setTimeout(function () {
-        $.ajax({
-            url: "http://photobazaar-testing-dev.camera360.com/manage/coupon/couponList",
-            type: "GET",
-            crossDomain: true,
-            async: false,
-            data: {
-                page: 1,
-                limit: 10
-            },
-            dataType: "jsonp",
-            jsonp: "jsonpCallback",
-            success: function (res) {
-                var newOptions = _this.state.options;
-                console.log(res.data.list)
-                var list = _this.handleList(res.data.list)
+        Common.getJSON('/manage/coupon/couponList', {
+            page: page,
+            limit: 10
+        }, function (res) {
+            if(res.status == 200){
+                let newOptions = _this.state.options;
+                let list = _this.handleList(res.data.list);
+                let count = res.data.count;
+                let all = Math.ceil(count / 10);
                 newOptions.columns = list;
-
-                _this.setState({
-                    options: newOptions
+                _this.setState((prevState)=>{
+                    Object.assign(prevState.options, {pageAll: all});
+                    Object.assign(prevState, newOptions);
                 });
+                console.log(_this.state.options)
+
             }
         });
-        // }, 1000)
 
     }
 
 
 
     render() {
+        const page = this.state.options.page;
+        const pageAll = this.state.options.pageAll;
         return (
-            <Table options={this.state.options} />
+            <div>
+                <Table options={this.state.options} />
+                <div className="page-btns">
+                    <button onClick={this.hangleChangePage} data-type="prev">上一页</button>
+                    <span>{page} / {pageAll}</span>
+                    <button onClick={this.hangleChangePage} data-type="next">下一页</button>
+                </div>
+            </div>
         )
     }
 }

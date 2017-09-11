@@ -5,23 +5,78 @@ import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
 import PropTypes from 'prop-types';
 import $ from 'jquery';
-import common from '../js/common.js';
+
+var Common = require('../js/common.js');
 
 
 export default class ModifyCoupon extends Component {
-    //处理优惠券
+    //处理优惠券类型变化
     handleTypeChange = (event) => {
-
-    }
-
-
-    //处理场景变化
-    handleSceneChange = (event) => {
-        this.setState((prevState) => {
-            Object.assign(prevState.couponInfo, { scene: event.target.value });
+        let newType = event.target.value;       /** 先获取新的value值，否则在setState()中获取不到        （why） **/
+        this.setState((prevState, a) => {
+            Object.assign(prevState.couponInfo, { type: newType });
         });
     }
 
+    //处理场景变化
+    handleSceneChange = (event) => {
+        let newScene = event.target.value;
+        this.setState((prevState) => {
+            Object.assign(prevState.couponInfo, { scene: newScene });
+        });
+    }
+
+    //处理内容输入
+    handleDescInput = (event) => {
+        let newDesc = event.target.value;
+        this.setState((prevState) => {
+            Object.assign(prevState.couponInfo, { desc: newDesc });
+        });
+    }
+
+    //处理优惠金额输入
+    handleAmoutInput = (event) => {
+        let newAmount = event.target.value;
+        this.setState((prevState) => {
+            Object.assign(prevState.couponInfo, { amount: newAmount });
+        });
+    }
+
+    //处理使用限制输入
+    handleStintInput = (event) => {
+        let newStint = event.target.value;
+        this.setState((prevState) => {
+            Object.assign(prevState.couponInfo, { stint: newStint });
+        });
+    }
+
+    //处理表单事件
+    handleFormEvent = (event) => {
+        let key = event.target.getAttribute("data-key");
+        let newValue = event.target.value;
+        this.setState((prevState) => {
+            prevState.couponInfo[key] = newValue;
+        });
+    }
+
+    //保存修改
+    handleSave = (event) => {
+        let _this = this;
+        $.ajax({
+            url: "http://photobazaar-testing-dev.camera360.com/manage/coupon/couponUpdate",
+            type: 'POST',
+            data: _this.couponInfo,
+            dataType: "jsonp",
+            jsonp: "jsonpCallback",
+            success: function (res) {
+                if (res.status == 200) {
+
+                } else if (res.status == 403) {
+                    alert(res.message);
+                }
+            }
+        })
+    }
 
     constructor(props) {
         super(props);
@@ -61,35 +116,27 @@ export default class ModifyCoupon extends Component {
     }
 
     getCouponInfo(prid) {
-        $.ajax({
-            url: "http://photobazaar-testing-dev.camera360.com/manage/coupon/couponList",
-            type: "GET",
-            crossDomain: true,
-            data: {
-                page: 1,
-                limit: 10
-            },
-            dataType: "jsonp",
-            jsonp: "jsonpCallback",
-            success: function (res) {
-                console.log(res)
-                if (res.status == 200) {
-                    let list = res.data.list;
-                    let len = list.length;
-                    for (let i = 0; i < len; i++) {
-                        if (list[i].prid == this.props.location.query.prid) {
-                            this.setState((prevState) => {
-                                Object.assign(prevState, { couponInfo: list[i] });
-                                Object.assign(prevState.dateTime,
-                                    { startTime: common.formatTime(list[i].startTime) },
-                                    { endTime: common.formatTime(list[i].endTime) },
-                                );
-                            })
-                        }
+        let _this = this;
+        Common.getJSON('/manage/coupon/couponList', {
+            page: 1,
+            limit: 10
+        }, function (res) {
+            if (res.status == 200) {
+                let list = res.data.list;
+                let len = list.length;
+                for (let i = 0; i < len; i++) {
+                    if (list[i].prid == _this.props.location.query.prid) {
+                        _this.setState((prevState) => {
+                            Object.assign(prevState, { couponInfo: list[i] });
+                            Object.assign(prevState.dateTime,
+                                { startTime: Common.formatTime(list[i].startTime) },
+                                { endTime: Common.formatTime(list[i].endTime) },
+                            );
+                        })
                     }
                 }
-            }.bind(this)
-        });
+            }
+        })
     }
 
     getSceneList() {
@@ -119,7 +166,6 @@ export default class ModifyCoupon extends Component {
             const { dateFormat, timeFormat, input, open } = this.state.pickerConf;
             const { startTime, endTime, startChange, endChange } = this.state.dateTime;
             const couponInfo = this.state.couponInfo;
-            console.log(this.state.couponInfo)
             return (
                 <div>
                     <p>优惠券修改</p>
@@ -150,7 +196,7 @@ export default class ModifyCoupon extends Component {
                             <th><span>*</span>优惠券类型</th>
                             <td>
                                 <form>
-                                    <select value={couponInfo.type} className="form-control">
+                                    <select className="form-control" defaultValue={couponInfo.type} data-key='type' onChange={this.handleFormEvent}>
                                         <option value="1">满减</option>
                                         <option value="2">折扣</option>
                                     </select>
@@ -161,7 +207,7 @@ export default class ModifyCoupon extends Component {
                             <th><span>*</span>场景</th>
                             <td>
                                 <form>
-                                    <select className="form-control" value={couponInfo.scene} onChange={this.handleSceneChange}>
+                                    <select className="form-control" defaultValue={couponInfo.scene} data-key='scene' onChange={this.handleFormEvent}>
                                         {
                                             this.state.sceneList.map(scene => {
                                                 return <option key={scene.type} value={scene.type}>{scene.name}</option>
@@ -175,17 +221,19 @@ export default class ModifyCoupon extends Component {
                         </tr>
                         <tr>
                             <th><span>*</span>描述</th>
-                            <td><input className="form-control" value={couponInfo.desc} /></td>
+                            <td><input className="form-control" defaultValue={couponInfo.desc} data-key='desc' onBlur={this.handleFormEvent} /></td>
                         </tr>
                         <tr>
                             <th><span>*</span>优惠金额</th>
-                            <td><input className="form-control" value={couponInfo.amount} /></td>
+                            <td><input className="form-control" defaultValue={couponInfo.amount} data-key='amount' onBlur={this.handleFormEvent} /></td>
                         </tr>
                         <tr>
                             <th><span>*</span>满减限制</th>
-                            <td><input className="form-control" value={couponInfo.stint == "0" ? "无限制" : "满" + couponInfo.stint + "元可用"} /></td>
+                            <td><input className="form-control" defaultValue={couponInfo.stint}
+                                data-key='stint' onBlur={this.handleFormEvent} /></td>
                         </tr>
                     </table>
+                    <div><button onClick={this.handleSave}>修改</button></div>
                 </div>
             )
         } else {
