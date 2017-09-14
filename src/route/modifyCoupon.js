@@ -1,58 +1,17 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import 'moment';
 import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
-import PropTypes from 'prop-types';
 import $ from 'jquery';
 
 var Common = require('../js/common.js');
 
 
 export default class ModifyCoupon extends Component {
-    //处理优惠券类型变化
-    handleTypeChange = (event) => {
-        let newType = event.target.value;       /** 先获取新的value值，否则在setState()中获取不到        （why） **/
-        this.setState((prevState, a) => {
-            Object.assign(prevState.couponInfo, { type: newType });
-        });
-    }
-
-    //处理场景变化
-    handleSceneChange = (event) => {
-        let newScene = event.target.value;
-        this.setState((prevState) => {
-            Object.assign(prevState.couponInfo, { scene: newScene });
-        });
-    }
-
-    //处理内容输入
-    handleDescInput = (event) => {
-        let newDesc = event.target.value;
-        this.setState((prevState) => {
-            Object.assign(prevState.couponInfo, { desc: newDesc });
-        });
-    }
-
-    //处理优惠金额输入
-    handleAmoutInput = (event) => {
-        let newAmount = event.target.value;
-        this.setState((prevState) => {
-            Object.assign(prevState.couponInfo, { amount: newAmount });
-        });
-    }
-
-    //处理使用限制输入
-    handleStintInput = (event) => {
-        let newStint = event.target.value;
-        this.setState((prevState) => {
-            Object.assign(prevState.couponInfo, { stint: newStint });
-        });
-    }
 
     //处理表单事件
     handleFormEvent = (event) => {
-        let key = event.target.getAttribute("data-key");
+        let key = event.target.getAttribute("data-key");    //获取事件类型
         let newValue = event.target.value;
         this.setState((prevState) => {
             prevState.couponInfo[key] = newValue;
@@ -65,13 +24,13 @@ export default class ModifyCoupon extends Component {
         $.ajax({
             url: "http://photobazaar-testing-dev.camera360.com/manage/coupon/couponUpdate",
             type: 'POST',
-            data: _this.couponInfo,
+            data: _this.state.couponInfo,
             dataType: "jsonp",
             jsonp: "jsonpCallback",
             success: function (res) {
-                if (res.status == 200) {
+                if (res.status === 200) {
 
-                } else if (res.status == 403) {
+                } else if (res.status === 403) {
                     alert(res.message);
                 }
             }
@@ -121,7 +80,7 @@ export default class ModifyCoupon extends Component {
             page: 1,
             limit: 10
         }, function (res) {
-            if (res.status == 200) {
+            if (res.status === 200) {
                 let list = res.data.list;
                 let len = list.length;
                 for (let i = 0; i < len; i++) {
@@ -148,7 +107,6 @@ export default class ModifyCoupon extends Component {
             },
             crossDomain: true,
             method: "GET",
-            dataType: "JSON",
             dataType: "jsonp",
             jsonp: "jsonpCallback",
             success: function (res) {

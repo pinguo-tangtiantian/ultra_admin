@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Router, Route, browserHistory, Link } from 'react-router';
-import Item from './menu-item.js';
+import { Link } from 'react-router';
 
 
 export default class Menu extends Component {
@@ -31,7 +30,11 @@ export default class Menu extends Component {
             <ul role="nav" className="menu">
                 {
                     this.state.menu.map((item) => {
-                        return <Item name={item.name} route={item.route} />
+                        return (
+                            <li className="menu-item" key={item.name}>
+                                <Link to={item.route}> {item.name}</Link>
+                            </li>
+                        )
                     })
                 }
             </ul>

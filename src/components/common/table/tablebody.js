@@ -1,24 +1,20 @@
 import React, { Component } from 'react';
-import { Router, Route, Link } from 'react-router';
+import { Link } from 'react-router';
 
 
 export default class Tbody extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
     }
 
     render() {
-        let _this = this;
+        let options = this.props.options;
         return (
             <tbody>
                 {
-                    _this.props.options.columns.map((row) => {
+                    options.columns.map((row) => {
                         return <tr>
                             {
-                                _this.props.options.head.map((th)=>{
+                                options.head.map((th)=>{
                                     if(th.type == 'string'){
                                         return <td>{row[th.key]}</td>
                                     }else{

@@ -1,32 +1,38 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types'
-import $ from 'jquery';
-
+import Reflux from 'reflux';
 import Table from '../components/common/table/table.js';
 var Common = require('../js/common.js');
 
-
-//table配置
+//创建actions
+var actions = Reflux.createActions({
+    lastPageL: {},
+    nextPage: {},
+    modify: {}
+});
 
 export default class CommonCouponConf extends Component {
+
+    
     //切换页码
     hangleChangePage = (event) => {
         let type = event.target.getAttribute('data-type');
         let page = this.state.options.page;
-        if(type == 'prev' && page > 1){ //前一页
-            page --;
-        }else if(type == 'next'){
-            page ++;
+        let pageAll = this.state.options.pageAll;
+        if (type == 'prev' && page > 1) { //上一页
+            page--;
+        } else if (type == 'next' && page < pageAll) {   //下一页
+            page++;
         }
         this.setState((prevState) => {
-            Object.assign(prevState.options, { page: page});
+            Object.assign(prevState.options, { page: page });
         });
         this.getCouponList(page);
     }
 
     constructor(props) {
         super(props);
+
+        //table配置
         this.state = {
             options: {
                 align: 'left',
@@ -41,10 +47,9 @@ export default class CommonCouponConf extends Component {
                     { title: '结束时间', key: 'endTime', type: 'string' },
                     { title: '场景', key: 'scene', type: 'string' },
                     {
-                        title: '操作', type: 'operate', actions: [
+                        title: '操作', key: 'action', type: 'operate', actions: [
                             {
                                 name: '修改', onClick: function () {
-                                    
                                 }
                             }
                         ]
@@ -52,44 +57,7 @@ export default class CommonCouponConf extends Component {
                 ],
                 page: 1,
                 pageAll: 0,
-                actions: [
-                    {
-                        title: "修改",
-                        callback: function () {
-                            // doModify();
-                        },
-                        render: function (rowData) {
-
-                        }
-                    },
-                    {
-                        title: "添加优惠券",
-                        callback: function () {
-                            // doAddCoupon();
-                        },
-                        render: function (rowData) {
-
-                        }
-                    },
-                    {
-                        title: "上一页",
-                        callback: function () {
-                            // doPrevPage();
-                        },
-                        render: function (rowData) {
-
-                        }
-                    },
-                    {
-                        title: "下一页",
-                        callback: function () {
-                            // doNextPage();
-                        },
-                        render: function (rowData) {
-
-                        }
-                    }
-                ],
+                actions: [],
                 columns: []
             }
         }
@@ -139,18 +107,16 @@ export default class CommonCouponConf extends Component {
             page: page,
             limit: 10
         }, function (res) {
-            if(res.status == 200){
+            if (res.status == 200) {
                 let newOptions = _this.state.options;
                 let list = _this.handleList(res.data.list);
                 let count = res.data.count;
                 let all = Math.ceil(count / 10);
                 newOptions.columns = list;
-                _this.setState((prevState)=>{
-                    Object.assign(prevState.options, {pageAll: all});
+                _this.setState((prevState) => {
+                    Object.assign(prevState.options, { pageAll: all });
                     Object.assign(prevState, newOptions);
                 });
-                console.log(_this.state.options)
-
             }
         });
 

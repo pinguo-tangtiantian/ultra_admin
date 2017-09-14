@@ -4,15 +4,12 @@ import Thead from './tablehead.js';
 import Tbody from './tablebody.js';
 
 export default class Table extends Component {
-    constructor(props) {
-        super(props);
-        // console.log(props)
-    }
-
     componentDidMount() {
+        
     }
 
     render() {
+        console.log(this.props)
         if (this.props.options.columns.length > 0) {
             return (
                 <table className="table">

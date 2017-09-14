@@ -17,9 +17,9 @@ module.exports = {
         var newStamp;
         var sep = separator || '/';
         if (timestamp.length < 13) {
-            newStamp = parseInt(timestamp * 1000);
+            newStamp = parseInt(timestamp * 1000, 10);
         } else {
-            newStamp = parseInt(timestamp);
+            newStamp = parseInt(timestamp, 10);
         }
         var time = new Date(newStamp);
         var y = time.getFullYear();

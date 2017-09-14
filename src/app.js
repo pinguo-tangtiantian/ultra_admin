@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import Menu from './components/common/menu/menu-list.js';
 export default class App extends Component {

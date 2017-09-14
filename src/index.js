@@ -6,10 +6,12 @@ import 'bootstrap/dist/css/bootstrap.css';
 import registerServiceWorker from './registerServiceWorker';
 
 import App from './app.js';
-import Menu from './components/common/menu/menu-list.js';
 import Home from './route/home.js';
-import CommonCouponConf from './route/commonCouponConf.js';
+// import CommonCouponConf from './route/commonCouponConf.js';
+import CommonCouponConf from './route/test.js';
 import ModifyCoupon from './route/modifyCoupon.js';
+
+console.log(typeof(CommonCouponConf))
 
 ReactDOM.render( 
         <Router history={browserHistory}>
